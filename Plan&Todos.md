@@ -1,4 +1,4 @@
-# Plan & Todos — Migrasi Frontend ke Tailwind CSS
+# Plan & Todos Migrasi Frontend ke Tailwind CSS
 
 ## Ringkasan
 
@@ -14,7 +14,7 @@ Frontend React 19 + Vite 6 saat ini pakai **inline styles** (`style={{}}`) di `A
 
 **Aksi:**
 - Install `tailwindcss @tailwindcss/vite`
-- Tambah `@tailwindcss/vite` plugin di `vite.config.ts` (bersamaan dg `@vitejs/plugin-react` — dua-duanya tetap, plugin Tailwind cuma handle CSS, React plugin tetap buat JSX)
+- Tambah `@tailwindcss/vite` plugin di `vite.config.ts` (bersamaan dg `@vitejs/plugin-react` dua-duanya tetap, plugin Tailwind cuma handle CSS, React plugin tetap buat JSX)
 - Hapus CSS `<style>` block di `index.html`, ganti jadi `@import "tailwindcss"` di `src/index.css`
 - Buat `src/index.css` dengan `@import "tailwindcss"`
 
@@ -59,14 +59,14 @@ Frontend React 19 + Vite 6 saat ini pakai **inline styles** (`style={{}}`) di `A
 | `padding: "0.6rem 1rem", borderRadius: 8, border: "none", background: "#22c55e", color: "#fff", fontWeight: 600, cursor: "pointer"` | `px-4 py-2.5 rounded-lg border-none bg-green-500 text-white font-semibold cursor-pointer` |
 
 **Catatan:**
-- Warna dinamis (`color`) pake `style={{ color }}` — tetap inline karena dinamis. Atau buat mapping class name.
-- `backgroundColor: "#1a1a2e"` — custom color, pake `bg-[#1a1a2e]`
+- Warna dinamis (`color`) pake `style={{ color }}` tetap inline karena dinamis. Atau buat mapping class name.
+- `backgroundColor: "#1a1a2e"` custom color, pake `bg-[#1a1a2e]`
 
 ### 2a. Responsive layout (semua device)
 
 **Masalah saat ini:** nol media query, fixed `max-width: 640px`, controls row 4 elemen berdesakan di layar kecil, padding/font statis.
 
-**Target:** Full screen (`w-full`) — setara Bootstrap `col-12`. Tidak ada centering, tidak ada max-width constraint. Layout grid 2 kolom di desktop, stack di mobile.
+**Target:** Full screen (`w-full`) setara Bootstrap `col-12`. Tidak ada centering, tidak ada max-width constraint. Layout grid 2 kolom di desktop, stack di mobile.
 
 ```
 Desktop (lg+):                        Mobile (< 768px):
@@ -81,17 +81,17 @@ Desktop (lg+):                        Mobile (< 768px):
 
 **Aksi di App.tsx (Tailwind classes):**
 - Root div: `w-full h-screen flex flex-col overflow-x-hidden`
-- Grid area: `flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]` — core kiri, conversation kanan
-- Conversation panel: `min-h-0 overflow-y-auto` — scroll independen
-- Controls dock: `flex flex-wrap gap-2 p-4 sm:p-5 md:p-6` — wrap saat sempit, sticky bawah
-- Input: `min-w-0 flex-1` — cegah overflow, bisa menyusut
-- `overflow-x-hidden` di root — cegah horizontal scroll
+- Grid area: `flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]` core kiri, conversation kanan
+- Conversation panel: `min-h-0 overflow-y-auto` scroll independen
+- Controls dock: `flex flex-wrap gap-2 p-4 sm:p-5 md:p-6` wrap saat sempit, sticky bawah
+- Input: `min-w-0 flex-1` cegah overflow, bisa menyusut
+- `overflow-x-hidden` di root cegah horizontal scroll
 
 **`#root` di index.html:**
 ```
 #root { width: 100%; height: 100dvh; display: flex; flex-direction: column; }
 ```
-Hapus `max-width: 640px; margin: 0 auto; padding: 1rem;` — pindah ke Tailwind classes.
+Hapus `max-width: 640px; margin: 0 auto; padding: 1rem;` pindah ke Tailwind classes.
 
 
 
@@ -117,13 +117,13 @@ Hapus `max-width: 640px; margin: 0 auto; padding: 1rem;` — pindah ke Tailwind 
 **Catatan:**
 - Icon status pakai `size={24}`, icon tombol pakai `size={16}` (dalam `flex items-center gap-1` + teks)
 - Warna icon status mengikuti `color` dinamis (inherit dari `style={{ color }}` parent)
-- Semua emoji hilang — ganti icon React component
+- Semua emoji hilang ganti icon React component
 
 ### 2c. Fallback icon: Google Icons (Material Symbols)
 
 **Kapan:** icon yang dibutuhkan tidak tersedia di lucide-react.
 
-**Sumber SVG:** Google Fonts Icons — https://fonts.google.com/icons (Material Symbols)
+**Sumber SVG:** Google Fonts Icons https://fonts.google.com/icons (Material Symbols)
 
 **Cara ambil SVG:**
 - Cari icon di fonts.google.com/icons
@@ -142,15 +142,15 @@ export function MyIcon({ size = 24, ...props }: React.SVGProps<SVGSVGElement> & 
 ```
 
 **Catatan:**
-- `fill="currentColor"` — warna ikut parent, sama seperti lucide
+- `fill="currentColor"` warna ikut parent, sama seperti lucide
 - Simpan icon custom di `src/icons/*.tsx`, bukan inline di App.tsx
 - Konsistensi: ukuran sama (24 status / 16 tombol), stroke style sama
 
-### 2d. Design System — "The Voice Core"
+### 2d. Design System "The Voice Core"
 
 **Konsep:** 1 focal hero: Voice Core orbital. Suite adalah voice, jadi keadaan suara harus TERLIHAT. Sisa layout tenang, biar core yang bicara.
 
-**Signature — Voice Core (pure CSS, ~160px orb):**
+**Signature Voice Core (pure CSS, ~160px orb):**
 
 | State | Visual Core |
 |---|---|
@@ -158,7 +158,7 @@ export function MyIcon({ size = 24, ...props }: React.SVGProps<SVGSVGElement> & 
 | listening | pulse rings mengembang + center dot berdenyut (radar feel) |
 | transcribing | ripple kecil dari center |
 | working | arc berputar (spinner) |
-| speaking | radial waveform bars — 8 bar di sekeliling circle, height animasi bergantian |
+| speaking | radial waveform bars 8 bar di sekeliling circle, height animasi bergantian |
 | interrupting | kontraksi flash cepat |
 | error | glow merah + shake halus |
 
@@ -180,9 +180,9 @@ Implementasi: `@keyframes` di `index.css`, class `core--idle`, `core--listening`
 | muted | `#8B8B9E` | `text-[#8B8B9E]` |
 
 **Typography (2 wajah, deliberate):**
-- **Space Grotesk** (Google Fonts) — wordmark + state label (uppercase, karakter techie)
-- **JetBrains Mono** (Google Fonts) — session id, activity log, timestamp
-- Body: `system-ui` stack — jangan tambah beban font
+- **Space Grotesk** (Google Fonts) wordmark + state label (uppercase, karakter techie)
+- **JetBrains Mono** (Google Fonts) session id, activity log, timestamp
+- Body: `system-ui` stack jangan tambah beban font
 
 **Komponen:**
 - **Top bar**: wordmark kiri + `<Wifi />` / `<WifiOff />` + "terhubung/terputus" + session id mono
@@ -192,15 +192,15 @@ Implementasi: `@keyframes` di `index.css`, class `core--idle`, `core--listening`
 - **Message bubbles**: user = `bg-violet-500/10 border-l-2 border-violet-500` right-aligned; assistant = `bg-[#131320]` left-aligned, `rounded-xl`, `max-w-[80%]`
 - **Activity log**: `text-xs text-[#8B8B9E] font-mono`, last 2-3 items saja
 - **Control dock**: sticky bottom, `bg-[#0B0B10]` + border-top subtle
-- **Mic FAB**: `w-14 h-14 rounded-full` — violet, merah saat aktif
+- **Mic FAB**: `w-14 h-14 rounded-full` violet, merah saat aktif
 - **Error**: banner strip `bg-red-500/10 border-l-2 border-red-500`, tidak apologize
-- **Empty state**: "Mulai bicara atau ketik perintah…" — undangan
+- **Empty state**: "Mulai bicara atau ketik perintah…" undangan
 
 **Motion:**
 - State transitions: core morphs via CSS class swap (fade)
 - Pesan baru: slide-in 200ms
 - `prefers-reduced-motion`: semua non-esensial mati
-- Tidak pakai library (framer-motion, etc) — CSS keyframes cukup
+- Tidak pakai library (framer-motion, etc) CSS keyframes cukup
 
 ### 3. Update index.html
 
@@ -216,8 +216,8 @@ Implementasi: `@keyframes` di `index.css`, class `core--idle`, `core--listening`
 ### 3a. Arsitektur 2 halaman: VoC + TyC
 
 **Temuan kunci:** server (VoiceController) SUDAH support full-duplex penuh:
-- **VAD auto-endpoint**: `feedAudio` → `vad.feed()` → `turn_end` → `endUtterance()` → `recognizer.end()` → `submitTranscript()` — otomatis, tanpa tombol
-- **Barge-in**: `user_speech_start` saat state `speaking`/`working` → `interrupt()` — user bisa interupsi agent yang bicara
+- **VAD auto-endpoint**: `feedAudio` → `vad.feed()` → `turn_end` → `endUtterance()` → `recognizer.end()` → `submitTranscript()` otomatis, tanpa tombol
+- **Barge-in**: `user_speech_start` saat state `speaking`/`working` → `interrupt()` user bisa interupsi agent yang bicara
 - Gap cuma di **client** (mic manual on/off) + **1 config** (`maxSilenceMs`)
 
 **Struktur file baru:**
@@ -227,10 +227,10 @@ apps/web/src/
 ├── main.tsx                   # React bootstrap
 ├── App.tsx                    # Router + shell (header + mode toggle + drawer state)
 ├── pages/
-│   ├── SetupPage.tsx          # Landing — pilih sesi lama / buat baru
+│   ├── SetupPage.tsx          # Landing pilih sesi lama / buat baru
 │   ├── NewSessionPage.tsx     # Wizard 2 step: project → model
-│   ├── VoicePage.tsx          # VoC — mic selalu on, full-duplex
-│   └── TypePage.tsx           # TyC — chat text, tanpa mic
+│   ├── VoicePage.tsx          # VoC mic selalu on, full-duplex
+│   └── TypePage.tsx           # TyC chat text, tanpa mic
 ├── components/
 │   ├── ModeToggle.tsx         # Floating pill [🎤 Voice] [✎ Type]
 │   ├── VoiceCore.tsx          # Orb state visualization (mic hero)
@@ -244,9 +244,9 @@ apps/web/src/
 └── icons/                     # Custom Google Icons (fallback)
 ```
 
-**Routing:** React Router (`react-router-dom`) — 2 route: `/voice` dan `/type`, default redirect `/voice`. Nav tab di header.
+**Routing:** React Router (`react-router-dom`) 2 route: `/voice` dan `/type`, default redirect `/voice`. Nav tab di header.
 
-### 3b. VoicePage (VoC) — full-duplex voice
+### 3b. VoicePage (VoC) full-duplex voice
 
 **Flow (perbedaan dari sekarang):**
 
@@ -259,13 +259,13 @@ klik "Stop" → text submit           VAD server deteksi diam 3s → auto submit
 
 **Aksi:**
 - `useEffect` mount: `getUserMedia` → AudioContext 16k → stream PCM16 chunks → `send({type:"audio"})` terus
-- `send({type:"start"})` sekali — mulai VAD session server
-- **Tidak ada tombol on/off mic** — mic hidup selama page terbuka
+- `send({type:"start"})` sekali mulai VAD session server
+- **Tidak ada tombol on/off mic** mic hidup selama page terbuka
 - Satu tombol "Akhiri Sesi" → stop tracks + `send({type:"stop"})`
-- Barge-in otomatis dari server — tidak perlu tombol interrupt (tapi tetap sediakan sebagai fallback)
+- Barge-in otomatis dari server tidak perlu tombol interrupt (tapi tetap sediakan sebagai fallback)
 - Render: Voice Core (state dari snapshot) + partial transcript live + Conversation
 - Handler `audio` msg → `playWav` (TTS playback)
-- **Server config**: `vadConfig: { maxSilenceMs: 3000 }` di `packages/server/src/index.ts` — jeda 3 detik diam → auto submit
+- **Server config**: `vadConfig: { maxSilenceMs: 3000 }` di `packages/server/src/index.ts` jeda 3 detik diam → auto submit
 
 **Protokol WS (sudah ada, tidak berubah):**
 ```
@@ -273,7 +273,7 @@ client → {type:"start"} | {type:"audio", data:PCM16-b64} | {type:"interrupt"} 
 server → {type:"state", snapshot} | {type:"audio", wav:b64} | {type:"error", message}
 ```
 
-### 3c. TypePage (TyC) — chat text
+### 3c. TypePage (TyC) chat text
 
 **Aksi:**
 - Tanpa mic, tanpa audio, tanpa WS audio stream
@@ -287,12 +287,12 @@ server → {type:"state", snapshot} | {type:"audio", wav:b64} | {type:"error", m
 **File:** `packages/server/src/index.ts`
 
 **Aksi:**
-- `new VoiceController({ ... , vadConfig: { maxSilenceMs: 3000 } })` — jeda 3 detik
-- Catatan: `DEFAULT_VAD_CONFIG.maxSilenceMs = 450` — default terlalu cepat buat VoC
+- `new VoiceController({ ... , vadConfig: { maxSilenceMs: 3000 } })` jeda 3 detik
+- Catatan: `DEFAULT_VAD_CONFIG.maxSilenceMs = 450` default terlalu cepat buat VoC
 
 ### 3e. Layout final + Info Panel (Project/MCP/Skills/Models)
 
-**PENTING — "Layout ala ChatGPT" = pola UI aplikasi ChatGPT (mic hero besar di tengah, fokus 1 interaksi). Ini hanya referensi LAYOUT, TIDAK terkait model — model tetap dari opencode providers (claude, gemini, dst).**
+**PENTING "Layout ala ChatGPT" = pola UI aplikasi ChatGPT (mic hero besar di tengah, fokus 1 interaksi). Ini hanya referensi LAYOUT, TIDAK terkait model model tetap dari opencode providers (claude, gemini, dst).**
 
 **Konsep layout:**
 
@@ -301,7 +301,7 @@ server → {type:"state", snapshot} | {type:"audio", wav:b64} | {type:"error", m
 | Desktop (≥1024px) | 3 kolom statis: `info \| core \| conversation`. Info panel collapsible via `[≡]` |
 | Mobile (<1024px) | Main view = mic hero saja (ala ChatGPT). Sidebar kiri slide-in = info. Sidebar kanan slide-in = conversation |
 
-**Mobile — Main view (default, ala ChatGPT):**
+**Mobile Main view (default, ala ChatGPT):**
 
 ```
 ┌──────────────────────────────────────┐
@@ -323,7 +323,7 @@ server → {type:"state", snapshot} | {type:"audio", wav:b64} | {type:"error", m
 └──────────────────────────────────────┘
 ```
 
-**Mobile — Sidebar kiri (Info Panel), slide-in:**
+**Mobile Sidebar kiri (Info Panel), slide-in:**
 
 ```
 ┌──────────┬───────────────────────────┐
@@ -351,7 +351,7 @@ server → {type:"state", snapshot} | {type:"audio", wav:b64} | {type:"error", m
 └──────────┴───────────────────────────┘
 ```
 
-**Mobile — Sidebar kanan (Conversation), slide-in:**
+**Mobile Sidebar kanan (Conversation), slide-in:**
 
 ```
 ┌───────────────────────────┬──────────┐
@@ -375,7 +375,7 @@ server → {type:"state", snapshot} | {type:"audio", wav:b64} | {type:"error", m
 └───────────────────────────┴──────────┘
 ```
 
-**Desktop — 3 kolom statis:**
+**Desktop 3 kolom statis:**
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────────┐
@@ -404,7 +404,7 @@ server → {type:"state", snapshot} | {type:"audio", wav:b64} | {type:"error", m
 └──────────────────────────────────────────────────────────────────────────────┘
 ```
 
-**Info Panel — urutan section (final):**
+**Info Panel urutan section (final):**
 
 ```
 ┌─────────────────────────────┐
@@ -451,7 +451,7 @@ async getContext(): Promise<{
   models: Array<{ id: string; provider: string }>
 }>
 ```
-Dipanggil sekali saat connect, dikirim ke client via WS `{type:"context"}` message. Client cache — tidak perlu refetch tiap render.
+Dipanggil sekali saat connect, dikirim ke client via WS `{type:"context"}` message. Client cache tidak perlu refetch tiap render.
 
 **Perilaku drawer (mobile):**
 - `[≡]` → sidebar kiri slide-in (info panel)
@@ -482,7 +482,7 @@ Dipanggil sekali saat connect, dikirim ke client via WS `{type:"context"}` messa
 └──────────────────────────────────────────────┘
 ```
 
-**Setup Page (landing, `/`)** — pilih sesi lama ATAU buat baru:
+**Setup Page (landing, `/`)** pilih sesi lama ATAU buat baru:
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────────┐
@@ -510,7 +510,7 @@ Dipanggil sekali saat connect, dikirim ke client via WS `{type:"context"}` messa
 └──────────────────────────────────────────────────────────────────────────────┘
 ```
 
-**New Session — Step 1: Pilih Project (`/new`):**
+**New Session Step 1: Pilih Project (`/new`):**
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────────┐
@@ -541,7 +541,7 @@ Dipanggil sekali saat connect, dikirim ke client via WS `{type:"context"}` messa
 └──────────────────────────────────────────────────────────────────────────────┘
 ```
 
-**New Session — Step 2: Pilih Model (`/new` step 2):**
+**New Session Step 2: Pilih Model (`/new` step 2):**
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────────┐
@@ -573,13 +573,13 @@ Dipanggil sekali saat connect, dikirim ke client via WS `{type:"context"}` messa
 └──────────────────────────────────────────────────────────────────────────────┘
 ```
 
-**Mode Toggle (VoC/TyC switch) — floating pill, BUKAN di header:**
+**Mode Toggle (VoC/TyC switch) floating pill, BUKAN di header:**
 
 - Posisi: `absolute top-14 left-1/2 -translate-x-1/2 z-10`
 - `[🎤 Voice]` aktif: core visible, mic on, input hidden
 - `[✎ Type]` aktif: core hidden, mic off, input muncul
-- Sesi & conversation SAMA — toggle cuma ganti mode input, bukan ganti sesi
-- Tampil di kedua page (tidak perlu router switch — cukup state `mode` di shell)
+- Sesi & conversation SAMA toggle cuma ganti mode input, bukan ganti sesi
+- Tampil di kedua page (tidak perlu router switch cukup state `mode` di shell)
 
 ```
 ┌─ Top bar ────────────────────────────────────────┐
@@ -600,7 +600,7 @@ Dipanggil sekali saat connect, dikirim ke client via WS `{type:"context"}` messa
 
 | Route | Page |
 |---|---|
-| `/` | Setup — pilih sesi / buat baru |
+| `/` | Setup pilih sesi / buat baru |
 | `/new` | Wizard: step 1 project, step 2 model |
 | `/conversation` | VoC/TyC (mode via toggle state, bukan route) |
 
@@ -609,12 +609,12 @@ Dipanggil sekali saat connect, dikirim ke client via WS `{type:"context"}` messa
 - Model list: `client.config.providers()` → flatten models
 - Recent projects: localStorage + `client.project.current()`
 - Create: `client.session.create({title})` → `client.session.update({model})` untuk set model
-- Pilih sesi lama: `SdkBridge.setSession(id)` — `sendMessage()` sudah pakai `_sessionId`
+- Pilih sesi lama: `SdkBridge.setSession(id)` `sendMessage()` sudah pakai `_sessionId`
 
 ### 4. Verifikasi
 
-- `bun --bun run dev` — jalan tanpa error
-- `lsp_diagnostics` — 0 error
+- `bun --bun run dev` jalan tanpa error
+- `lsp_diagnostics` 0 error
 - Cek visual: layout, warna, spacing sama seperti sebelum migrasi
 - Cek responsive: viewport mobile (320–640px), tablet, desktop
 - Cek `prefers-reduced-motion`
@@ -630,21 +630,125 @@ Dipanggil sekali saat connect, dikirim ke client via WS `{type:"context"}` messa
 | 1 | Install `tailwindcss @tailwindcss/vite`, update `vite.config.ts` | `apps/web/package.json`, `apps/web/vite.config.ts` | high |
 | 2 | Install `lucide-react` + `react-router-dom` | `apps/web/package.json` | high |
 | 3 | Buat `src/index.css` dg `@import "tailwindcss"` + base `#root` (full screen) + Voice Core keyframes + design tokens | `apps/web/src/index.css` (new) | high |
-| 4 | Update `index.html` — hapus `<style>`, tambah CSS link + Google Fonts (Space Grotesk, JetBrains Mono) | `apps/web/index.html` | high |
+| 4 | Update `index.html` hapus `<style>`, tambah CSS link + Google Fonts (Space Grotesk, JetBrains Mono) | `apps/web/index.html` | high |
 | 5 | Migrasi inline styles → Tailwind classes (design system: palet, komponen, bubbles) | `apps/web/src/App.tsx` | high |
 | 6 | Layout 3 kolom desktop (info\|core\|conversation) / mobile main = mic hero + 2 drawer | `apps/web/src/App.tsx` | high |
-| 7 | Voice Core component: `src/components/VoiceCore.tsx` — state-driven orb + waveform | `apps/web/src/components/VoiceCore.tsx` (new) | high |
-| 8 | Conversation component: `src/components/Conversation.tsx` — bubbles + activity (shared) | `apps/web/src/components/Conversation.tsx` (new) | high |
-| 9 | InfoPanel component: `src/components/InfoPanel.tsx` — Project/MCP/Skills/Models, drawer + desktop static | `apps/web/src/components/InfoPanel.tsx` (new) | high |
-| 10 | ModeToggle component: `src/components/ModeToggle.tsx` — floating pill [Voice]/[Type] | `apps/web/src/components/ModeToggle.tsx` (new) | high |
-| 11 | SessionPicker component: `src/components/SessionPicker.tsx` — list sesi + search | `apps/web/src/components/SessionPicker.tsx` (new) | high |
-| 12 | WS lib: `src/lib/ws.ts` — connect, send, onState/onAudio/onError/onContext; `src/lib/audio.ts` — mic → PCM16 chunks | `apps/web/src/lib/ws.ts`, `apps/web/src/lib/audio.ts` (new) | high |
-| 13 | Router + shell: `App.tsx` — routes `/` `/new` `/conversation`, mode toggle state, drawer state | `apps/web/src/App.tsx` | high |
-| 14 | SetupPage: `src/pages/SetupPage.tsx` — list sesi (lama) / tombol buat baru | `apps/web/src/pages/SetupPage.tsx` (new) | high |
-| 15 | NewSessionPage: `src/pages/NewSessionPage.tsx` — wizard 2 step: pilih project dir → pilih model | `apps/web/src/pages/NewSessionPage.tsx` (new) | high |
+| 7 | Voice Core component: `src/components/VoiceCore.tsx` state-driven orb + waveform | `apps/web/src/components/VoiceCore.tsx` (new) | high |
+| 8 | Conversation component: `src/components/Conversation.tsx` bubbles + activity (shared) | `apps/web/src/components/Conversation.tsx` (new) | high |
+| 9 | InfoPanel component: `src/components/InfoPanel.tsx` Project/MCP/Skills/Models, drawer + desktop static | `apps/web/src/components/InfoPanel.tsx` (new) | high |
+| 10 | ModeToggle component: `src/components/ModeToggle.tsx` floating pill [Voice]/[Type] | `apps/web/src/components/ModeToggle.tsx` (new) | high |
+| 11 | SessionPicker component: `src/components/SessionPicker.tsx` list sesi + search | `apps/web/src/components/SessionPicker.tsx` (new) | high |
+| 12 | WS lib: `src/lib/ws.ts` connect, send, onState/onAudio/onError/onContext; `src/lib/audio.ts` mic → PCM16 chunks | `apps/web/src/lib/ws.ts`, `apps/web/src/lib/audio.ts` (new) | high |
+| 13 | Router + shell: `App.tsx` routes `/` `/new` `/conversation`, mode toggle state, drawer state | `apps/web/src/App.tsx` | high |
+| 14 | SetupPage: `src/pages/SetupPage.tsx` list sesi (lama) / tombol buat baru | `apps/web/src/pages/SetupPage.tsx` (new) | high |
+| 15 | NewSessionPage: `src/pages/NewSessionPage.tsx` wizard 2 step: pilih project dir → pilih model | `apps/web/src/pages/NewSessionPage.tsx` (new) | high |
 | 16 | VoicePage: mic selalu on, streaming audio, auto-submit VAD 3s (server), barge-in, TTS playback | `apps/web/src/pages/VoicePage.tsx` (new) | high |
 | 17 | TypePage: chat text tanpa mic, submit → conversation | `apps/web/src/pages/TypePage.tsx` (new) | high |
-| 18 | Bridge: `SdkBridge.getContext()` + `listSessions()` + `setSession(id)` — fetch directory/MCP/skills/models, session list & switch | `packages/devora/src/opencode/bridge.ts` | high |
+| 18 | Bridge: `SdkBridge.getContext()` + `listSessions()` + `setSession(id)` fetch directory/MCP/skills/models, session list & switch | `packages/devora/src/opencode/bridge.ts` | high |
 | 19 | Server: `vadConfig: { maxSilenceMs: 3000 }` + kirim `{type:"context"}` + `{type:"sessions"}` saat connect | `packages/server/src/index.ts` | high |
 | 20 | Migrasi emoji → lucide icons; fallback Google Icons SVG utk icon yg tidak ada di lucide | `apps/web/src/**` | high |
-| 21 | `bun dev` — test end-to-end: setup (pilih sesi/baru) + VoC (bicara→3s→submit→jawab→interupsi) + TyC + mode toggle + info panel + responsive + reduced-motion | — | high |
+| 21 | `bun dev` test end-to-end: setup (pilih sesi/baru) + VoC (bicara→3s→submit→jawab→interupsi) + TyC + mode toggle + info panel + responsive + reduced-motion | | high |
+
+---
+
+## Masalah yang Ditemukan
+
+### M1 TTS membaca markdown (asterisk, bold, dll)
+Teks TTS mengandung format markdown (`**bold**`, `*italic*`, `# heading`, `- list`, dll). Piper membacakan karakter asterisk/hash sebagai "bintang" / "kres", bukan sebagai formatting. Observer: "seperti **Ini adalah pengertian dari MultiChannel**, TTS membacanya asterisk-asterisk".
+
+**Lokasi:** `packages/devora/src/narration/filter.ts` narasi mentah dari LLM diteruskan ke TTS tanpa strip markdown.
+
+**Rencana:**
+- Tambah fungsi `stripMarkdown(text)` di `filter.ts` atau `narrator.ts` hapus: `**bold**` → `bold`, `*italic*` → `italic`, `# heading` → `heading`, `` `code` `` → `code`, `- list` → `list`, `---` → ` `, `[link](url)` → `link`, `> quote` → `quote`
+- Gunakan regex sederhana, bukan parser (ringan, cepat)
+- Exclude: inline code blocks (backtick) seharusnya dibaca sebagai "kode: ..." opsional
+- Terapkan di `Narrator.enqueue()` atau `filter.ts` sebelum text masuk speech queue
+
+### M2 Pilihan suara TTS (voice switching)
+Saat ini hardcoded: `id_ID-news_tts-medium`. User ingin bisa ganti voice (misal pria/wanita/cepat/lambat dari piper voice list).
+
+**Lokasi:** `packages/server/src/index.ts` `DEVORA_PIPER_MODEL` env. Piper voice terbatas pada model yang di-download.
+
+**Rencana:**
+- Download voice alternatif piper: `id_ID-female-stt-medium` (tersedia di HuggingFace?)
+- Piper voice list: https://huggingface.co/rhasspy/piper-voices/tree/v1.0.0/id/id_ID
+  - `news_tts-medium` (saat ini, pria)
+  - `female-stt-medium`? Cek tersedia tidak
+  - Alternatif: engine TTS lebih kaya (OpenAI TTS, edge-tts, MeloTTS) tapi butuh koneksi internet / GPU
+- UI: dropdown voice selector di Settings (modal atau sidebar)
+- Server: env `DEVORA_PIPER_VOICE` ganti model path sesuai pilihan
+- Atau: server-side voice list (scan `~/.local/share/piper/models/id/`) → kirim via WS → client pilih
+
+### M3 STT lambat untuk core kecil/RAM kecil
+faster-whisper `base` (~145MB model, int8) butuh ~2-4GB RAM saat inferensi. Di VPS/device dengan RAM kecil (<2GB) atau CPU lemah, latency tinggi.
+
+**Lokasi:** `packages/devora/scripts/stt_worker_stream.py` + `packages/devora/src/stt/stream.ts` model `faster-whisper-base`.
+
+**Rencana:**
+- Opsi model ringan:
+  - `faster-whisper-tiny` (~40MB, lebih cepat, akurasi sedikit turun)
+  - `faster-whisper-small` (~120MB, kompromi)
+  - `whisper.cpp` tiny/base (GGML) lebih cepat di CPU tua
+- Configurable: env `DEVORA_STT_MODEL` bisa diubah ke `tiny`
+- Auto-detect: kalau RAM < 2GB, pakai tiny; fallback
+- Atau: nonaktifkan server STT (VoC pakai Web Speech browser tidak kena masalah ini)
+
+### M4 Tidak ada indikator penengah antara user submit dan jawaban
+Saat user submit, UI langsung hening sampai agent jawab (bisa 3-30 detik). User merasa "kosong / tidak ada respons".
+
+**Lokasi:** `apps/web/src/pages/VoicePage.tsx` + `apps/web/src/components/Conversation.tsx`
+
+**Rencana:**
+- **Subtle loading indicator:**
+  - Dot animation (3 titik bergerak) di area conversation setelah user message
+  - Atau: VoiceCore berubah ke animasi "thinking" (spin + dots)
+  - Atau: pesan "Menunggu jawaban…" di activity
+- **State-based:**
+  - `submitting` → "Mengirim…"
+  - `working` → animasi "Sedang berpikir" (dots + pulse ring)
+  - `speaking` → suara keluar, normal
+- **Audio feedback:**
+  - Short "listening" tone (opsional, 200ms) saat submit
+  - Atau: TTS membaca "satu detik" (narration LLM sudah ada, tapi mungkin lambat)
+- **Partial response display:**
+  - Tampilkan reasoning text dari LLM (event `reasoning`) sebagai italic di conversation
+  - Tampilkan tool calls ("• mencari file…") sudah ada di activity
+
+### M5 TTS membaca terlalu cepat sebelum final LLM, delay dianggap error
+Narration memproses event `message.part.updated` dan `session.next.text.ended` kadang TTS membaca teks partial (belum final) atau membaca status tool. Delay LLM (misal 2-3 detik) dianggap error karena TTS mulai baca lalu berhenti.
+
+**Log:**
+```
+[15:55:20] POST ag/gemini-3-flash → antigravity/gemini-3-flash · STREAM · 32 MSG · 59 TOOL · ACC:akhmadabu062@gmail.com
+[15:55:20] ⚠️ [HEADROOM] skipped: unsupported antigravity request shape
+[15:55:23] DONE 2268ms · TTFT 1828ms · IN 80106 · OUT 219
+```
+
+**Lokasi:** `packages/devora/src/conversation/controller.ts` `handleBridgeEvent` → `classifyNarration` → `Narrator.enqueue` → `drainSpeech`
+
+**Rencana:**
+- **Delay narration start:** tunggu sampai `session.idle` (agent selesai total) sebelum mulai narration text. Saat ini narration mulai dari `message.part.updated` (streaming text) ini terlalu cepat.
+- **Partial text buffer:** kumpulkan text parts sampai `session.idle`, lalu narration sebagai satu kalimat utuh.
+- **Tool call narration:** jangan narasikan tool calls (cukup di activity); `classifyNarration` sudah handle sebagian
+- **Error clarity:** pastikan error dari bridge (LLM unreachable, timeout) dibedakan dari "delay normal". Tambah label "Timeout: LLM tidak merespons N detik" vs "Sedang memproses…"
+- **VoicePage:** state `working` → tampilkan "Sedang diproses…" + spinner dots; jangan hening
+
+### Prioritas perbaikan
+
+| Issue | Prioritas | Effort | Dampak |
+|---|---|---|---|
+| M1 Markdown TTS | **High** | Rendah | Langsung terasa TTS baca simbol aneh |
+| M4 Indikator tunggu | **High** | Rendah | UX langsung terasa lebih baik |
+| M5 Narration timing | **High** | Sedang | Delay dianggap error, bikin bingung |
+| M2 Pilihan suara | Medium | Sedang | Voice quality, tapi fitur tambahan |
+| M3 STT lambat | Medium | Rendah | Web Speech browser sudah jalan |
+
+## Todos baru
+
+| # | Task | File | Priority |
+|---|---|---|---|
+| 22 | M1: stripMarkdown filter sebelum TTS narration | `packages/devora/src/narration/filter.ts` | high |
+| 23 | M4: loading indicator / dots / thinking animasi saat working/submitting | `apps/web/src/pages/VoicePage.tsx`, `apps/web/src/components/VoiceCore.tsx` | high |
+| 24 | M5: tunda narration sampai session.idle, buffer partial text, clear error label | `packages/devora/src/conversation/controller.ts` | high |
+| 25 | M2: download voice alternatif, server voice list, UI dropdown | `packages/server/src/index.ts`, UI baru | medium |
+| 26 | M3: opsi model STT tiny/ringan, auto-detect | `packages/devora/src/stt/stream.ts` | medium |

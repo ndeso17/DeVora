@@ -10,7 +10,7 @@ npm install -g devora        # atau
 pnpm add -g devora           # atau
 bun add -g devora
 
-# tanpa install — jalankan langsung
+# tanpa install jalankan langsung
 npx devora install
 ```
 

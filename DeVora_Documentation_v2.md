@@ -4,7 +4,7 @@ This bundle contains the revised PRD, architecture, and implementation plan.
 
 ---
 
-# DeVora — Voice-Native OpenCode Companion
+# DeVora Voice-Native OpenCode Companion
 
 **Status:** Ready for Development  
 **Version:** 2.0  
@@ -142,7 +142,7 @@ DeVora:
 
 ```text
 DeVora:
-"Saya sedang menjalankan integration test—"
+"Saya sedang menjalankan integration test "
 
 User:
 "Stop."
@@ -562,16 +562,16 @@ Developer harus dapat menyelesaikan coding task sederhana tanpa keyboard setelah
 
 ## 19. Product Principles
 
-1. **OpenCode First** — OpenCode adalah coding agent.
-2. **Reuse Everything** — jangan implementasikan ulang capability yang sudah ada.
-3. **One New Screen** — MVP hanya menambah satu Voice TUI Screen.
-4. **Voice as Interaction Layer** — voice bukan agent baru.
+1. **OpenCode First** OpenCode adalah coding agent.
+2. **Reuse Everything** jangan implementasikan ulang capability yang sudah ada.
+3. **One New Screen** MVP hanya menambah satu Voice TUI Screen.
+4. **Voice as Interaction Layer** voice bukan agent baru.
 5. **Existing Session as Source of Truth**.
 6. **No New Backend** untuk MVP.
-7. **Realtime First** — prioritaskan latency dan interruption.
-8. **Interruptible** — user dapat menyela kapan saja.
-9. **Human in Control** — permission OpenCode tetap berlaku.
-10. **Minimal Fork** — perubahan terhadap upstream sekecil mungkin.
+7. **Realtime First** prioritaskan latency dan interruption.
+8. **Interruptible** user dapat menyela kapan saja.
+9. **Human in Control** permission OpenCode tetap berlaku.
+10. **Minimal Fork** perubahan terhadap upstream sekecil mungkin.
 
 ## 20. Final Product Vision
 
@@ -1049,7 +1049,7 @@ OpenCode's current TUI is already an interactive terminal interface for LLM codi
 9. Keep keyboard fallback.
 10. Every phase must leave OpenCode buildable.
 
-## 3. Phase 0 — Source Reconnaissance
+## 3. Phase 0 Source Reconnaissance
 
 ### Goal
 
@@ -1086,7 +1086,7 @@ We can answer:
 - Can a plugin access the session/client?
 - Where should microphone lifecycle live?
 
-## 4. Phase 1 — Voice Screen Prototype
+## 4. Phase 1 Voice Screen Prototype
 
 ### Goal
 
@@ -1126,7 +1126,7 @@ Example:
 
 Voice screen opens/closes reliably and does not break existing TUI.
 
-## 5. Phase 2 — STT
+## 5. Phase 2 STT
 
 ### Goal
 
@@ -1165,7 +1165,7 @@ User speaks:
 
 and Voice Screen shows the final transcript without keyboard input.
 
-## 6. Phase 3 — Connect STT to OpenCode
+## 6. Phase 3 Connect STT to OpenCode
 
 ### Goal
 
@@ -1206,7 +1206,7 @@ Speak
 
 without keyboard.
 
-## 7. Phase 4 — TTS
+## 7. Phase 4 TTS
 
 ### Goal
 
@@ -1235,7 +1235,7 @@ interface SpeechSynthesizer {
 
 OpenCode response is spoken automatically.
 
-## 8. Phase 5 — Intelligent Narration
+## 8. Phase 5 Intelligent Narration
 
 ### Goal
 
@@ -1268,7 +1268,7 @@ task.completed
 
 Normal coding work does not produce excessive speech.
 
-## 9. Phase 6 — Realtime Interruption
+## 9. Phase 6 Realtime Interruption
 
 ### Goal
 
@@ -1309,7 +1309,7 @@ User can say:
 
 and DeVora stops speaking immediately.
 
-## 10. Phase 7 — Conversation Controller
+## 10. Phase 7 Conversation Controller
 
 ### Goal
 
@@ -1348,7 +1348,7 @@ LISTENING
 - [x] Duplicate-response protection.
 - [x] Session continuity.
 
-## 11. Phase 8 — Voice Commands
+## 11. Phase 8 Voice Commands
 
 These should mostly be natural-language prompts handled by OpenCode.
 
@@ -1368,7 +1368,7 @@ Priority commands:
 
 Emergency stop should be handled locally when possible so it does not depend on another LLM round trip.
 
-## 12. Phase 9 — TUI Polish
+## 12. Phase 9 TUI Polish
 
 ### Tasks
 
@@ -1384,7 +1384,7 @@ Emergency stop should be handled locally when possible so it does not depend on 
 - [ ] Voice selection.
 - [x] Keyboard fallback.
 
-## 13. Phase 10 — Hardening
+## 13. Phase 10 Hardening
 
 ### Tests
 
@@ -1525,7 +1525,7 @@ Potential providers can be evaluated separately based on:
 
 Evaluate in this order:
 
-### Option A — TUI Plugin
+### Option A TUI Plugin
 
 Preferred if plugin APIs can provide:
 
@@ -1538,11 +1538,11 @@ Preferred if plugin APIs can provide:
 
 OpenCode currently documents a TUI plugin system with these types of capabilities. citeturn0search1turn0search4
 
-### Option B — `@opencode-ai/tui` Extension
+### Option B `@opencode-ai/tui` Extension
 
 If plugin APIs cannot support a full voice experience, add the screen and voice integration to the canonical TUI package.
 
-### Option C — Minimal Fork
+### Option C Minimal Fork
 
 Only if the upstream APIs cannot expose the required integration point.
 
@@ -1635,7 +1635,7 @@ DAN lolos uji coba** (unit/integration/E2E, termasuk uji hardware nyata).
 
 | Area | Bukti |
 |---|---|
-| Unit (VAD, state machine, narration, interrupt, turn, narrator) | `bun test` — **40/40 pass** (lokal + server anlap05) |
+| Unit (VAD, state machine, narration, interrupt, turn, narrator) | `bun test` **40/40 pass** (lokal + server anlap05) |
 | STT whisper (Indonesia) | piper-generate audio → transkrip `"Halo, ini adalah test pengenalan suara bahasa Indonesia."` |
 | STT vosk (streaming) | worker ready 1.7s, protokol partial/final OK |
 | TTS piper → speaker | aplay playback OK (lokal + server) |

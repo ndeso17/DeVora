@@ -75,7 +75,7 @@ previous route.
 
 ### Can a plugin access the session/client?
 
-Yes — `TuiPluginApi` (from `@opencode-ai/plugin/tui`):
+Yes `TuiPluginApi` (from `@opencode-ai/plugin/tui`):
 
 - `api.client: OpencodeClient` → session create/prompt/abort
 - `api.state.session.messages(sessionID)` / `.status()` / `.permission()` → read models
@@ -92,7 +92,7 @@ cleaned up through `api.lifecycle`. Rationale:
 
 - The TUI process is the interactive surface; capture must start/stop with the
   voice screen and app exit.
-- `arecord` runs as a child process of the TUI — killed deterministically on
+- `arecord` runs as a child process of the TUI killed deterministically on
   dispose/interrupt.
 
 ## Plugin loading mechanics
@@ -107,7 +107,7 @@ cleaned up through `api.lifecycle`. Rationale:
   Solid/OpenTUI instances (single reactivity graph).
 - Enable/disable per plugin persists via `kv["plugin_enabled"]`.
 
-## Decision: Option A (plugin) — no fork needed
+## Decision: Option A (plugin) no fork needed
 
 Doc §17 order resolved: the plugin API covers route/screen, keybind/slash,
 client/session access, events, lifecycle, renderer/theme access. **No changes to
