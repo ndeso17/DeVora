@@ -1,4 +1,4 @@
-# DeVora — Voice Agent UI (Web)
+# DeVora Voice Agent UI (Web)
 
 DeVora = UI suara untuk coding agent. **OpenCode hanya core agent** di belakang;
 UI, mic, TTS, dan pipeline voice semuanya milik DeVora.
@@ -12,7 +12,7 @@ UI, mic, TTS, dan pipeline voice semuanya milik DeVora.
 Browser (React web app: mic, playback, voice screen)
    │  WebSocket /ws (audio PCM16 16k + events)
    ▼
-DeVora Server (packages/server — Bun)
+DeVora Server (packages/server Bun)
    │  VoiceController: VAD → STT → narration → piper TTS
    │  @opencode-ai/sdk
    ▼
@@ -25,7 +25,7 @@ opencode serve (core agent)  ── LLM provider (9router / openrouter / dll)
 - [bun](https://bun.sh) ≥ 1.x
 - [opencode](https://opencode.ai) CLI
 - [piper](https://github.com/rhasspy/piper) + voice `id_ID-news_tts-medium`
-- Python 3 + faster-whisper (STT streaming) — `pip install faster-whisper`
+- Python 3 + faster-whisper (STT streaming) `pip install faster-whisper`
 - LLM gateway (opsional, contoh 9router di `127.0.0.1:20128`)
 
 ## Download Model
@@ -74,7 +74,7 @@ Env opsional:
 | `DEVORA_STT_MODEL` | `models/faster-whisper-base` | model STT |
 | `WHISPER_LANG` | `id` | bahasa STT |
 | `STT_TRAILING_MS` | `2000` | window partial STT |
-| `DEVORA_TLS_CERT/KEY` | — | aktifkan HTTPS langsung |
+| `DEVORA_TLS_CERT/KEY` | | aktifkan HTTPS langsung |
 
 ### Web frontend (dev)
 
@@ -82,7 +82,7 @@ Env opsional:
 cd apps/web
 bun install
 bunx --bun vite --host 0.0.0.0
-# buka http://<host>:5173 — proxy /ws ke 127.0.0.1:3000
+# buka http://<host>:5173 proxy /ws ke 127.0.0.1:3000
 ```
 
 ### Build produksi
@@ -103,10 +103,10 @@ ssh -f -N -L 3000:127.0.0.1:3000 anlap05
 
 | message | field | fungsi |
 |---|---|---|
-| `start` | — | mulai listening (VAD aktif) |
-| `stop` | — | berhenti listening |
+| `start` | | mulai listening (VAD aktif) |
+| `stop` | | berhenti listening |
 | `audio` | `data` (base64 PCM16 16k mono) | kirim chunk mic |
-| `interrupt` | — | barge-in / stop agent |
+| `interrupt` | | barge-in / stop agent |
 | `submit` | `text` | keyboard fallback |
 | `create_session` | `directory`, `title?`, `model?` `{providerID, modelID}` | buat sesi baru di project directory |
 | `select_session` | `id`, `model?` | pindah ke sesi yang sudah ada |
@@ -142,7 +142,7 @@ sudo ./install.sh --hotspot     # + bind9 DNS + nginx TLS + CA (gateway hotspot)
 #   TLS: https://devora.local  (CA: https://devora.local/ca.crt)
 ```
 
-Config LLM — buat `opencode.json` sendiri (jangan di-commit):
+Config LLM buat `opencode.json` sendiri (jangan di-commit):
 
 ```json
 {
@@ -165,6 +165,6 @@ Config LLM — buat `opencode.json` sendiri (jangan di-commit):
 
 ## DNS + SSL (hotspot)
 
-- **DNS**: bind9 listen `10.42.0.1:53` — `devora.local` → `10.42.0.1` (client hotspot set DNS `10.42.0.1`)
+- **DNS**: bind9 listen `10.42.0.1:53` `devora.local` → `10.42.0.1` (client hotspot set DNS `10.42.0.1`)
 - **TLS**: CA lokal `Devora Local CA` + fullchain di `/etc/ssl/devora/`; nginx `https://devora.local` → `127.0.0.1:3000` (WebSocket upgrade)
 - **Trust CA**: unduh `https://devora.local/ca.crt`, install di perangkat → `https://devora.local` tanpa warning + Web Speech API aktif (secure context)
