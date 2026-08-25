@@ -142,6 +142,27 @@ sudo ./install.sh --hotspot     # + bind9 DNS + nginx TLS + CA (gateway hotspot)
 #   TLS: https://devora.local  (CA: https://devora.local/ca.crt)
 ```
 
+### Systemd service
+
+Template: `packages/installer/scripts/devora.service` (ganti `USER` dan `HOME_DIR`).
+
+```bash
+# install unit
+sudo cp packages/installer/scripts/devora.service /etc/systemd/system/devora.service
+sudo sed -i "s/USER/$(whoami)/g; s|HOME_DIR|$HOME|g" /etc/systemd/system/devora.service
+sudo systemctl daemon-reload
+
+# manage
+sudo systemctl enable devora    # auto-start saat boot
+sudo systemctl start devora
+sudo systemctl stop devora
+sudo systemctl restart devora
+sudo systemctl disable devora
+systemctl status devora         # cek status + log
+```
+
+Log server: `journalctl -u devora -f`
+
 Config LLM buat `opencode.json` sendiri (jangan di-commit):
 
 ```json
