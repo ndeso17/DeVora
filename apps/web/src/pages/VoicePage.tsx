@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import { Square, Power, Keyboard, Cpu } from "lucide-react"
+import { Square, Power, Keyboard, Cpu, Mic } from "lucide-react"
 import { VoiceCore } from "../components/VoiceCore"
 import { Conversation } from "../components/Conversation"
 import { useWebSpeechSTT } from "../lib/useWebSpeechSTT"
@@ -62,7 +62,9 @@ export function VoicePage({
   const { start, stop } = useWebSpeechSTT({
     lang: "id-ID",
     autoRestart: mode === "continuous",
+    collectUntilStop: mode === "push",
     onFinal: (text) => {
+      if (!text.trim()) return
       // echo filter: drop final that mostly repeats what the agent just said
       if (wordOverlap(text, lastAssistantRef.current) > 0.6) {
         setInterim("")
@@ -171,9 +173,39 @@ export function VoicePage({
             </div>
           )}
           {mode === "push" && !micError && (
-            <p className="text-xs text-muted">
-              {pushDownRef.current ? "🎙 Merekam… lepas SPACE" : "Tahan SPACE untuk bicara"}
-            </p>
+            <div className="flex flex-col items-center gap-2">
+              <button
+                onPointerDown={(e) => {
+                  e.preventDefault()
+                  pushDownRef.current = true
+                  setInterim("")
+                  start()
+                }}
+                onPointerUp={() => {
+                  pushDownRef.current = false
+                  stop()
+                }}
+                onPointerLeave={() => {
+                  if (pushDownRef.current) {
+                    pushDownRef.current = false
+                    stop()
+                  }
+                }}
+                onPointerCancel={() => {
+                  pushDownRef.current = false
+                  stop()
+                }}
+                className={`w-20 h-20 rounded-full flex items-center justify-center shadow-lg transition-colors select-none touch-none active:scale-95 ${
+                  pushDownRef.current ? "bg-red-500" : "bg-violet-500"
+                }`}
+                aria-label="Tahan untuk bicara"
+              >
+                <Mic size={32} className="text-white" />
+              </button>
+              <p className="text-xs text-muted">
+                {pushDownRef.current ? "🎙 Merekam… lepas" : "Tahan tombol untuk bicara"}
+              </p>
+            </div>
           )}
           {!micError && (
             <div className="flex items-center gap-1.5 bg-surface border border-surface-2 rounded-full px-3 py-1.5 text-xs">
