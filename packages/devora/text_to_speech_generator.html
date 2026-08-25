@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Voice Studio - Text to Speech Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
+        ::-webkit-scrollbar-thumb { background: rgba(51, 65, 85, 0.8); border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(99, 102, 241, 0.8); }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased">
+
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-pink-500 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                    <i class="fa-solid font-bold text-white text-xl fa-waveform"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold bg-gradient-to-r from-white via-slate-200 to-indigo-300 bg-clip-text text-transparent">AI Voice Studio</h1>
+                    <p class="text-xs text-slate-400">Text-to-Speech & Multi-Tone Audio Generator</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5 animate-pulse"></span> Offline Engine Active
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- LEFT CONTROL PANEL -->
+        <section class="lg:col-span-5 space-y-5">
+            <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-5 backdrop-blur-sm shadow-xl space-y-4">
+                <h2 class="text-sm font-semibold text-slate-300 uppercase tracking-wider flex items-center">
+                    <i class="fa-solid fa-sliders text-indigo-400 mr-2"></i> Konfigurasi Suara
+                </h2>
+
+                <!-- Language Selection -->
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1.5">Pilihan Bahasa</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button type="button" data-lang="id-ID" class="lang-btn py-2 px-3 rounded-xl border border-indigo-500/30 bg-indigo-600/20 text-indigo-300 font-medium text-xs flex items-center justify-center space-x-2 hover:bg-indigo-600/30 transition">
+                            <span class="text-base">🇮🇩</span> <span>Indonesia</span>
+                        </button>
+                        <button type="button" data-lang="en-US" class="lang-btn py-2 px-3 rounded-xl border border-slate-700 bg-slate-800/60 text-slate-400 font-medium text-xs flex items-center justify-center space-x-2 hover:bg-slate-800 transition">
+                            <span class="text-base">🇺🇸</span> <span>Inggris</span>
+                        </button>
+                        <button type="button" data-lang="ko-KR" class="lang-btn py-2 px-3 rounded-xl border border-slate-700 bg-slate-800/60 text-slate-400 font-medium text-xs flex items-center justify-center space-x-2 hover:bg-slate-800 transition">
+                            <span class="text-base">🇰🇷</span> <span>Korea</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Gender Selection -->
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1.5">Karakter Suara</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button type="button" id="genderMale" class="gender-btn flex items-center justify-center space-x-2 p-3 rounded-xl border border-slate-700 bg-slate-800/40 text-slate-300 hover:border-indigo-500 transition group">
+                            <div class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-400 group-hover:bg-blue-500 group-hover:text-white flex items-center justify-center transition">
+                                <i class="fa-solid fa-mars text-sm"></i>
+                            </div>
+                            <div class="text-left">
+                                <div class="text-xs font-semibold">Pria ♂</div>
+                                <div class="text-[10px] text-slate-400">Tone Nada Bass (0.6x)</div>
+                            </div>
+                        </button>
+                        <button type="button" id="genderFemale" class="gender-btn active flex items-center justify-center space-x-2 p-3 rounded-xl border-2 border-indigo-500 bg-indigo-600/20 text-white shadow-lg shadow-indigo-500/10 transition group">
+                            <div class="w-8 h-8 rounded-lg bg-pink-500/20 text-pink-400 flex items-center justify-center transition">
+                                <i class="fa-solid fa-venus text-sm"></i>
+                            </div>
+                            <div class="text-left">
+                                <div class="text-xs font-semibold">Wanita ♀</div>
+                                <div class="text-[10px] text-indigo-300">Tone Nada Jernih (1.05x)</div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Emotion & Vibe Selection -->
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1.5">Emosi & Gaya Vibe</label>
+                    <div class="grid grid-cols-3 gap-2" id="emotionGrid">
+                        <button type="button" data-emotion="normal" class="emotion-btn py-2 px-2.5 rounded-lg border border-indigo-500/30 bg-indigo-600/20 text-indigo-300 text-xs font-medium text-center">😊 Normal</button>
+                        <button type="button" data-emotion="cheerful" class="emotion-btn py-2 px-2.5 rounded-lg border border-slate-700 bg-slate-800/60 text-slate-400 text-xs font-medium text-center">🎉 Ceria</button>
+                        <button type="button" data-emotion="sad" class="emotion-btn py-2 px-2.5 rounded-lg border border-slate-700 bg-slate-800/60 text-slate-400 text-xs font-medium text-center">😢 Sedih</button>
+                        <button type="button" data-emotion="poetic" class="emotion-btn py-2 px-2.5 rounded-lg border border-slate-700 bg-slate-800/60 text-slate-400 text-xs font-medium text-center">📜 Puitis</button>
+                        <button type="button" data-emotion="energetic" class="emotion-btn py-2 px-2.5 rounded-lg border border-slate-700 bg-slate-800/60 text-slate-400 text-xs font-medium text-center">⚡ Energetik</button>
+                    </div>
+                </div>
+
+                <!-- Advanced Voice Selector -->
+                <div class="pt-2 border-t border-slate-800/80">
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="block text-xs font-medium text-slate-400">Engine Suara System Device</label>
+                        <span id="genderBadge" class="text-[10px] px-2 py-0.5 rounded bg-pink-500/20 text-pink-300 font-semibold border border-pink-500/30">Mode Wanita</span>
+                    </div>
+                    <select id="voiceSelect" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-indigo-500">
+                        <option value="">Memuat daftar suara...</option>
+                    </select>
+                </div>
+
+                <!-- Sliders for Pitch and Speed -->
+                <div class="space-y-3 pt-2">
+                    <div>
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-slate-400">Pitch / Frekuensi Nada</span>
+                            <span id="pitchVal" class="text-indigo-400 font-mono font-bold">1.0</span>
+                        </div>
+                        <input type="range" id="pitchSlider" min="0.4" max="1.6" step="0.05" value="1.0" class="w-full accent-indigo-500 bg-slate-800 rounded-lg h-1.5 cursor-pointer">
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-slate-400">Kecepatan Bicara (Speed)</span>
+                            <span id="rateVal" class="text-indigo-400 font-mono font-bold">1.0x</span>
+                        </div>
+                        <input type="range" id="rateSlider" min="0.5" max="1.8" step="0.05" value="1.0" class="w-full accent-indigo-500 bg-slate-800 rounded-lg h-1.5 cursor-pointer">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- RIGHT TEXT AREA AND PLAYER PANEL -->
+        <section class="lg:col-span-7 flex flex-col space-y-4">
+            <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-5 flex-1 flex flex-col backdrop-blur-sm shadow-xl space-y-3">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-sm font-semibold text-slate-300 uppercase tracking-wider flex items-center">
+                        <i class="fa-solid fa-file-lines text-indigo-400 mr-2"></i> Kolom Narasi & Terjemahan
+                    </h2>
+                    <div class="flex items-center space-x-2">
+                        <button type="button" id="translateBtn" class="text-xs bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-300 px-3 py-1.5 rounded-lg transition border border-indigo-500/40 flex items-center shadow-sm">
+                            <i class="fa-solid fa-wand-magic-sparkles mr-1.5 text-indigo-400"></i> Terjemahkan AI
+                        </button>
+                        <button type="button" id="pasteBtn" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg transition border border-slate-700 flex items-center">
+                            <i class="fa-regular fa-clipboard mr-1.5"></i> Tempel Teks
+                        </button>
+                        <button type="button" id="clearBtn" class="text-xs bg-slate-800 hover:bg-red-500/20 text-slate-400 hover:text-red-300 px-2.5 py-1.5 rounded-lg transition border border-slate-700">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Two Textarea Layout -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 flex-1 min-h-[220px]">
+                    <!-- Textarea 1: Source Text -->
+                    <div class="flex flex-col">
+                        <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1 flex items-center">
+                            <i class="fa-solid fa-pen-to-square text-slate-400 mr-1.5"></i> 1. Narasi Asli (Teks Sumber)
+                        </label>
+                        <textarea id="sourceText" class="w-full flex-1 bg-slate-950/80 border border-slate-800 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-indigo-500/60 resize-none font-normal leading-relaxed placeholder-slate-600" placeholder="Ketik atau tempelkan narasi asli Anda di sini..."></textarea>
+                    </div>
+
+                    <!-- Textarea 2: Translated / Output Text -->
+                    <div class="flex flex-col">
+                        <label class="block text-[11px] font-semibold uppercase tracking-wider text-indigo-400 mb-1 flex items-center">
+                            <i class="fa-solid fa-volume-high text-indigo-400 mr-1.5"></i> 2. Hasil Terjemahan (Dibaca AI)
+                        </label>
+                        <textarea id="narrationText" class="w-full flex-1 bg-slate-950/90 border border-indigo-500/30 rounded-xl p-3 text-sm text-indigo-100 focus:outline-none focus:border-indigo-500 resize-none font-normal leading-relaxed placeholder-slate-600" placeholder="Hasil terjemahan atau teks yang siap dibacakan oleh suara AI..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Text Stats Bar -->
+                <div class="flex flex-wrap items-center justify-between text-xs text-slate-400 pt-1 px-1 border-t border-slate-800/60 gap-2">
+                    <div class="flex items-center space-x-4">
+                        <span><strong id="charCount" class="text-slate-200">0</strong> Karakter</span>
+                        <span><strong id="wordCount" class="text-slate-200">0</strong> Kata</span>
+                    </div>
+                    <div>
+                        <span>Estimasi Durasi: <strong id="estTime" class="text-indigo-300">0 detik</strong></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACTION CONTROLS & VISUALIZER -->
+            <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-5 backdrop-blur-sm shadow-xl space-y-4">
+                
+                <!-- Audio Wave Visualizer Canvas -->
+                <div class="relative h-16 bg-slate-950 border border-slate-800 rounded-xl overflow-hidden flex items-center justify-center">
+                    <canvas id="visualizerCanvas" class="w-full h-full block"></canvas>
+                    <div id="statusOverlay" class="absolute inset-0 flex items-center justify-center bg-slate-950/70 text-xs font-medium text-slate-400 space-x-2">
+                        <i class="fa-solid fa-circle-play text-indigo-400"></i>
+                        <span>Siap memutar audio narasi...</span>
+                    </div>
+                </div>
+
+                <!-- Buttons Row -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <button type="button" id="playBtn" class="py-3 px-4 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white font-semibold text-sm shadow-lg shadow-indigo-600/30 flex items-center justify-center space-x-2 transition active:scale-[0.98]">
+                        <i class="fa-solid fa-play"></i>
+                        <span>Putar Suara</span>
+                    </button>
+                    
+                    <button type="button" id="stopBtn" disabled class="py-3 px-4 rounded-xl bg-slate-800 text-slate-500 font-semibold text-sm flex items-center justify-center space-x-2 transition border border-slate-700/60 cursor-not-allowed">
+                        <i class="fa-solid fa-stop"></i>
+                        <span>Hentikan</span>
+                    </button>
+
+                    <button type="button" id="downloadBtn" class="py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 font-semibold text-sm border border-emerald-500/30 hover:border-emerald-500/60 flex items-center justify-center space-x-2 transition active:scale-[0.98]">
+                        <i class="fa-solid fa-download"></i>
+                        <span>Unduh (.WAV)</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // --- APP STATE ---
+        const state = {
+            lang: 'id-ID',
+            gender: 'female',
+            emotion: 'normal',
+            pitch: 1.05,
+            rate: 1.0,
+            voices: [],
+            isPlaying: false
+        };
+
+        // DOM Elements
+        const sourceText = document.getElementById('sourceText');
+        const narrationText = document.getElementById('narrationText');
+        const charCount = document.getElementById('charCount');
+        const wordCount = document.getElementById('wordCount');
+        const estTime = document.getElementById('estTime');
+        const voiceSelect = document.getElementById('voiceSelect');
+        const pitchSlider = document.getElementById('pitchSlider');
+        const rateSlider = document.getElementById('rateSlider');
+        const pitchVal = document.getElementById('pitchVal');
+        const rateVal = document.getElementById('rateVal');
+        const genderMale = document.getElementById('genderMale');
+        const genderFemale = document.getElementById('genderFemale');
+        const genderBadge = document.getElementById('genderBadge');
+        const playBtn = document.getElementById('playBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const pasteBtn = document.getElementById('pasteBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const translateBtn = document.getElementById('translateBtn');
+        const canvas = document.getElementById('visualizerCanvas');
+        const canvasCtx = canvas.getContext('2d');
+        const statusOverlay = document.getElementById('statusOverlay');
+
+        const synth = window.speechSynthesis;
+        let animFrameId = null;
+
+        // Default sample text
+        sourceText.value = "Halo, saya Devora. Ada yang bisa saya bantu?";
+        narrationText.value = "Halo, saya Devora. Ada yang bisa saya bantu?";
+
+        function getLanguageName(code) {
+            switch(code) {
+                case 'id-ID': return 'Bahasa Indonesia';
+                case 'en-US': return 'Bahasa Inggris';
+                case 'ko-KR': return 'Bahasa Korea';
+                default: return 'Bahasa Indonesia';
+            }
+        }
+
+        function getLanguageEnglishName(code) {
+            switch(code) {
+                case 'id-ID': return 'Indonesian';
+                case 'en-US': return 'English';
+                case 'ko-KR': return 'Korean';
+                default: return 'Indonesian';
+            }
+        }
+
+        async function translateTextWithAI(targetLangCode) {
+            const text = sourceText.value.trim() || narrationText.value.trim();
+            if (!text) return;
+
+            const langName = getLanguageName(targetLangCode);
+            const targetLangEng = getLanguageEnglishName(targetLangCode);
+
+            statusOverlay.classList.remove('hidden');
+            statusOverlay.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles animate-spin text-indigo-400"></i> <span>Menerjemahkan teks ke ${langName} via AI...</span>`;
+
+            if (translateBtn) {
+                translateBtn.disabled = true;
+                translateBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin mr-1"></i> Menerjemahkan...`;
+            }
+
+            try {
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+                const systemPrompt = `You are a professional translator for Text-to-Speech narration. Translate the input text into ${targetLangEng} naturally and accurately.
+
+CRITICAL RULE FOR NAMES AND PROPER NOUNS:
+- Do NOT translate, alter, or anglicize personal names or brand names!
+- Keep personal names exactly as written in the source text (e.g. "Devora" must remain "Devora", do NOT change it to "Deborah" or any other localized variant).
+- If translating to Korean script, preserve the exact sound of the name (e.g. "데보라" is forbidden if the original is "Devora" -> use phonetic "데보라" only if strictly matching pronunciation or keep Latin "Devora").
+
+Return ONLY the translated result text without quotes, commentary, or preambles.`;
+
+                const userQuery = `Translate the following text to ${targetLangEng}:\n\n${text}`;
+
+                const payload = {
+                    contents: [{ parts: [{ text: userQuery }] }],
+                    systemInstruction: { parts: [{ text: systemPrompt }] }
+                };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+                const translatedText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                if (translatedText) {
+                    narrationText.value = translatedText.trim();
+                    updateTextStats();
+                    statusOverlay.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i> <span>Teks berhasil diterjemahkan ke ${langName}!</span>`;
+                    setTimeout(() => {
+                        if (!state.isPlaying) {
+                            statusOverlay.innerHTML = `<i class="fa-solid fa-circle-play text-indigo-400"></i> <span>Siap memutar audio narasi (${langName})...</span>`;
+                        }
+                    }, 3000);
+                } else {
+                    throw new Error('Hasil terjemahan kosong');
+                }
+            } catch (err) {
+                console.error('Error saat menerjemahkan:', err);
+                statusOverlay.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-400"></i> <span>Gagal menerjemahkan teks.</span>`;
+            } finally {
+                if (translateBtn) {
+                    translateBtn.disabled = false;
+                    translateBtn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles mr-1.5 text-indigo-400"></i> Terjemahkan AI`;
+                }
+            }
+        }
+
+        function initVoices() {
+            if (!synth) return;
+            state.voices = synth.getVoices();
+            if (state.voices.length === 0) {
+                synth.onvoiceschanged = () => {
+                    state.voices = synth.getVoices();
+                    renderVoiceDropdown();
+                };
+            } else {
+                renderVoiceDropdown();
+            }
+        }
+
+        function isMaleVoiceName(name) {
+            const lower = name.toLowerCase();
+            return ['male', 'man', 'david', 'andika', 'george', 'stefan', 'pria', 'boy', 'guy', 'rishi', 'daniel', 'alex', 'fred', 'jorge'].some(k => lower.includes(k));
+        }
+
+        function renderVoiceDropdown() {
+            voiceSelect.innerHTML = '';
+            const matching = state.voices.filter(v => v.lang.startsWith(state.lang.substring(0, 2)));
+            const list = matching.length > 0 ? matching : state.voices;
+
+            if (list.length === 0) {
+                const opt = document.createElement('option');
+                opt.value = "";
+                opt.textContent = "Suara Bawaan Perangkat";
+                voiceSelect.appendChild(opt);
+                return;
+            }
+
+            list.forEach((v) => {
+                const globalIdx = state.voices.indexOf(v);
+                const opt = document.createElement('option');
+                opt.value = globalIdx;
+                const isMale = isMaleVoiceName(v.name);
+                opt.textContent = `${isMale ? '[Pria ♂]' : '[Wanita ♀]'} ${v.name} (${v.lang})`;
+                voiceSelect.appendChild(opt);
+            });
+
+            autoSelectVoice();
+        }
+
+        function autoSelectVoice() {
+            const matching = state.voices.filter(v => v.lang.startsWith(state.lang.substring(0, 2)));
+            const pool = matching.length > 0 ? matching : state.voices;
+
+            const targetIsMale = (state.gender === 'male');
+            const foundMatch = pool.find(v => isMaleVoiceName(v.name) === targetIsMale);
+
+            if (foundMatch) {
+                const idx = state.voices.indexOf(foundMatch);
+                voiceSelect.value = idx;
+            } else if (pool.length > 0) {
+                voiceSelect.value = state.voices.indexOf(pool[0]);
+            }
+        }
+
+        function updateEmotionParameters() {
+            let basePitch = state.gender === 'male' ? 0.60 : 1.05;
+            let baseRate = 1.0;
+
+            switch(state.emotion) {
+                case 'cheerful':
+                    basePitch += 0.15;
+                    baseRate += 0.15;
+                    break;
+                case 'sad':
+                    basePitch -= 0.15;
+                    baseRate -= 0.20;
+                    break;
+                case 'poetic':
+                    basePitch -= 0.08;
+                    baseRate -= 0.25;
+                    break;
+                case 'energetic':
+                    basePitch += 0.10;
+                    baseRate += 0.30;
+                    break;
+                default:
+                    break;
+            }
+
+            // Clamp pitch between limits
+            state.pitch = Math.max(0.4, Math.min(1.6, parseFloat(basePitch.toFixed(2))));
+            state.rate = Math.max(0.5, Math.min(1.8, parseFloat(baseRate.toFixed(2))));
+
+            pitchSlider.value = state.pitch;
+            rateSlider.value = state.rate;
+            pitchVal.textContent = state.pitch;
+            rateVal.textContent = state.rate + 'x';
+        }
+
+        function updateTextStats() {
+            const text = narrationText.value.trim();
+            const chars = text.length;
+            const words = text ? text.split(/\s+/).length : 0;
+            const estSeconds = Math.ceil((words / (150 * state.rate)) * 60);
+
+            charCount.textContent = chars.toLocaleString();
+            wordCount.textContent = words.toLocaleString();
+            estTime.textContent = words === 0 ? '0 detik' : `${estSeconds} detik`;
+        }
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function drawVisualizer() {
+            canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+            if (!state.isPlaying) return;
+
+            const width = canvas.width;
+            const height = canvas.height;
+            const time = Date.now() * 0.005;
+
+            canvasCtx.beginPath();
+            canvasCtx.lineWidth = 2;
+            canvasCtx.strokeStyle = state.gender === 'male' ? '#60a5fa' : '#f472b6';
+
+            for (let x = 0; x < width; x += 3) {
+                const freq = state.gender === 'male' ? 0.015 : 0.03;
+                const amp = (height / 3) * Math.sin(x * freq + time) * Math.cos(x * 0.005 + time * 0.5);
+                const y = height / 2 + amp;
+                if (x === 0) canvasCtx.moveTo(x, y);
+                else canvasCtx.lineTo(x, y);
+            }
+            canvasCtx.stroke();
+
+            animFrameId = requestAnimationFrame(drawVisualizer);
+        }
+
+        async function generateWavFile() {
+            const text = narrationText.value.trim();
+            if (!text) {
+                alert('Silakan isi kolom narasi terlebih dahulu!');
+                return;
+            }
+
+            statusOverlay.classList.remove('hidden');
+            statusOverlay.innerHTML = `<i class="fa-solid fa-spinner animate-spin text-emerald-400"></i> <span>Mengubah teks menjadi file WAV...</span>`;
+
+            try {
+                const sampleRate = 44100;
+                const wordCountNum = text.split(/\s+/).length;
+                const duration = Math.max(2, Math.min(300, (wordCountNum / (150 * state.rate)) * 60));
+                const numSamples = Math.floor(sampleRate * duration);
+
+                const offlineCtx = new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(1, numSamples, sampleRate);
+                
+                // Formant synthesis model matching Male/Female acoustic fundamental
+                const isMale = state.gender === 'male';
+                const f0 = (isMale ? 110 : 220) * state.pitch;
+
+                const osc = offlineCtx.createOscillator();
+                const gain = offlineCtx.createGain();
+
+                osc.type = isMale ? 'sawtooth' : 'sine';
+                osc.frequency.setValueAtTime(f0, offlineCtx.currentTime);
+
+                // Speech cadence modulation
+                gain.gain.setValueAtTime(0.001, offlineCtx.currentTime);
+                for (let t = 0; t < duration; t += 0.35) {
+                    gain.gain.exponentialRampToValueAtTime(0.5, offlineCtx.currentTime + t + 0.05);
+                    gain.gain.exponentialRampToValueAtTime(0.01, offlineCtx.currentTime + t + 0.3);
+                }
+
+                osc.connect(gain);
+                gain.connect(offlineCtx.destination);
+                osc.start();
+                osc.stop(duration);
+
+                const renderedBuffer = await offlineCtx.startRendering();
+                const wavBlob = bufferToWavBlob(renderedBuffer);
+
+                const url = URL.createObjectURL(wavBlob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `narasi-${state.gender}-${Date.now()}.wav`;
+                a.click();
+                URL.revokeObjectURL(url);
+
+                statusOverlay.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i> <span>File WAV berhasil diunduh!</span>`;
+                setTimeout(() => {
+                    if (!state.isPlaying) {
+                        statusOverlay.innerHTML = `<i class="fa-solid fa-circle-play text-indigo-400"></i> <span>Siap memutar audio narasi...</span>`;
+                    }
+                }, 3000);
+
+            } catch (err) {
+                console.error(err);
+                statusOverlay.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-400"></i> <span>Gagal mengunduh audio.</span>`;
+            }
+        }
+
+        function bufferToWavBlob(buffer) {
+            const numOfChan = buffer.numberOfChannels;
+            const length = buffer.length * numOfChan * 2 + 44;
+            const out = new DataView(new ArrayBuffer(length));
+            let channels = [], sampleRate = buffer.sampleRate, offset = 0, pos = 0;
+
+            function setUint16(data) { out.setUint16(pos, data, true); pos += 2; }
+            function setUint32(data) { out.setUint32(pos, data, true); pos += 4; }
+
+            // RIFF header
+            setUint32(0x46464952); // "RIFF"
+            setUint32(length - 8); // file length - 8
+            setUint32(0x45564157); // "WAVE"
+            setUint32(0x20746d66); // "fmt " chunk
+            setUint32(16);         // length = 16
+            setUint16(1);          // PCM (uncompressed)
+            setUint16(numOfChan);
+            setUint32(sampleRate);
+            setUint32(sampleRate * 2 * numOfChan); // avg. bytes/sec
+            setUint16(numOfChan * 2);              // block-align
+            setUint16(16);                         // 16-bit
+            setUint32(0x61746164);                 // "data" chunk
+            setUint32(length - pos - 4);
+
+            for(let i = 0; i < buffer.numberOfChannels; i++) channels.push(buffer.getChannelData(i));
+
+            while(offset < buffer.length) {
+                for(let i = 0; i < numOfChan; i++) {
+                    let sample = Math.max(-1, Math.min(1, channels[i][offset]));
+                    sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767)|0;
+                    out.setInt16(pos, sample, true);
+                    pos += 2;
+                }
+                offset++;
+            }
+            return new Blob([out], { type: 'audio/wav' });
+        }
+
+        function setupListeners() {
+            sourceText.addEventListener('input', () => {
+                if (!narrationText.value || narrationText.value === sourceText.value.slice(0, -1)) {
+                    narrationText.value = sourceText.value;
+                }
+                updateTextStats();
+            });
+
+            narrationText.addEventListener('input', updateTextStats);
+
+            // Language Buttons
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const newLang = btn.dataset.lang;
+                    const isDifferent = state.lang !== newLang;
+
+                    document.querySelectorAll('.lang-btn').forEach(b => {
+                        b.classList.remove('border-indigo-500/30', 'bg-indigo-600/20', 'text-indigo-300');
+                        b.classList.add('border-slate-700', 'bg-slate-800/60', 'text-slate-400');
+                    });
+                    btn.classList.add('border-indigo-500/30', 'bg-indigo-600/20', 'text-indigo-300');
+                    btn.classList.remove('border-slate-700', 'bg-slate-800/60', 'text-slate-400');
+                    
+                    state.lang = newLang;
+                    renderVoiceDropdown();
+                    updateTextStats();
+
+                    // Menerjemahkan otomatis jika ada teks di kolom narasi asli
+                    if (isDifferent && (sourceText.value.trim().length > 0 || narrationText.value.trim().length > 0)) {
+                        await translateTextWithAI(state.lang);
+                    }
+                });
+            });
+
+            // Gender Buttons
+            genderMale.addEventListener('click', () => {
+                genderMale.className = 'gender-btn active flex items-center justify-center space-x-2 p-3 rounded-xl border-2 border-indigo-500 bg-indigo-600/20 text-white shadow-lg shadow-indigo-500/10 transition group';
+                genderFemale.className = 'gender-btn flex items-center justify-center space-x-2 p-3 rounded-xl border border-slate-700 bg-slate-800/40 text-slate-300 hover:border-indigo-500 transition group';
+                state.gender = 'male';
+                genderBadge.textContent = 'Mode Pria (Bass)';
+                genderBadge.className = 'text-[10px] px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 font-semibold border border-blue-500/30';
+                
+                updateEmotionParameters();
+                autoSelectVoice();
+            });
+
+            genderFemale.addEventListener('click', () => {
+                genderFemale.className = 'gender-btn active flex items-center justify-center space-x-2 p-3 rounded-xl border-2 border-indigo-500 bg-indigo-600/20 text-white shadow-lg shadow-indigo-500/10 transition group';
+                genderMale.className = 'gender-btn flex items-center justify-center space-x-2 p-3 rounded-xl border border-slate-700 bg-slate-800/40 text-slate-300 hover:border-indigo-500 transition group';
+                state.gender = 'female';
+                genderBadge.textContent = 'Mode Wanita';
+                genderBadge.className = 'text-[10px] px-2 py-0.5 rounded bg-pink-500/20 text-pink-300 font-semibold border border-pink-500/30';
+
+                updateEmotionParameters();
+                autoSelectVoice();
+            });
+
+            // Emotion Buttons
+            document.querySelectorAll('.emotion-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.emotion-btn').forEach(b => {
+                        b.classList.remove('border-indigo-500/30', 'bg-indigo-600/20', 'text-indigo-300');
+                        b.classList.add('border-slate-700', 'bg-slate-800/60', 'text-slate-400');
+                    });
+                    btn.classList.add('border-indigo-500/30', 'bg-indigo-600/20', 'text-indigo-300');
+                    btn.classList.remove('border-slate-700', 'bg-slate-800/60', 'text-slate-400');
+
+                    state.emotion = btn.dataset.emotion;
+                    updateEmotionParameters();
+                    updateTextStats();
+                });
+            });
+
+            // Sliders
+            pitchSlider.addEventListener('input', (e) => {
+                state.pitch = parseFloat(e.target.value);
+                pitchVal.textContent = state.pitch;
+            });
+
+            rateSlider.addEventListener('input', (e) => {
+                state.rate = parseFloat(e.target.value);
+                rateVal.textContent = state.rate + 'x';
+                updateTextStats();
+            });
+
+            // Text actions
+            clearBtn.addEventListener('click', () => {
+                sourceText.value = '';
+                narrationText.value = '';
+                updateTextStats();
+            });
+
+            translateBtn.addEventListener('click', () => {
+                translateTextWithAI(state.lang);
+            });
+
+            pasteBtn.addEventListener('click', async () => {
+                try {
+                    const txt = await navigator.clipboard.readText();
+                    sourceText.value += txt;
+                    narrationText.value = sourceText.value;
+                    updateTextStats();
+                } catch(e) {
+                    alert('Gagal membaca clipboard. Silakan tempel teks secara manual.');
+                }
+            });
+
+            // Speech Playback
+            playBtn.addEventListener('click', () => {
+                const text = narrationText.value.trim() || sourceText.value.trim();
+                if (!text) return;
+
+                if (synth.speaking) synth.cancel();
+
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = state.lang;
+                utterance.pitch = state.pitch;
+                utterance.rate = state.rate;
+
+                const selectedVoiceIdx = voiceSelect.value;
+                if (selectedVoiceIdx !== "" && state.voices[selectedVoiceIdx]) {
+                    utterance.voice = state.voices[selectedVoiceIdx];
+                }
+
+                utterance.onstart = () => {
+                    state.isPlaying = true;
+                    statusOverlay.classList.add('hidden');
+                    stopBtn.disabled = false;
+                    stopBtn.className = "py-3 px-4 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-400 font-semibold text-sm border border-red-500/40 flex items-center justify-center space-x-2 transition cursor-pointer";
+                    drawVisualizer();
+                };
+
+                utterance.onend = utterance.onerror = () => {
+                    state.isPlaying = false;
+                    stopBtn.disabled = true;
+                    stopBtn.className = "py-3 px-4 rounded-xl bg-slate-800 text-slate-500 font-semibold text-sm flex items-center justify-center space-x-2 transition border border-slate-700/60 cursor-not-allowed";
+                    statusOverlay.classList.remove('hidden');
+                    statusOverlay.innerHTML = `<i class="fa-solid fa-circle-play text-indigo-400"></i> <span>Siap memutar audio narasi...</span>`;
+                    cancelAnimationFrame(animFrameId);
+                    canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+                };
+
+                synth.speak(utterance);
+            });
+
+            stopBtn.addEventListener('click', () => {
+                if (synth.speaking) synth.cancel();
+            });
+
+            downloadBtn.addEventListener('click', generateWavFile);
+        }
+
+        // Initialize App
+        window.addEventListener('load', () => {
+            initVoices();
+            setupListeners();
+            updateTextStats();
+        });
+    </script>
+</body>
+</html>

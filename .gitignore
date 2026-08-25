@@ -1,0 +1,29 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Local databases
+*.db
+*.db-wal
+*.db-shm
+
+# Test artifacts
+.pytest_cache/
+
+# Node
+node_modules/
+dist/
+
+# Secrets
+.env
+
+# Tool state / indexes (local-only)
+.omo/
+.codegraph
+/speech-to-text/
+
+# Large model files (>100MB, GitHub limit)
+models/base.pt
+# All models (binary artifacts, download separately)
+models/
