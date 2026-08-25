@@ -53,12 +53,26 @@ class ScriptedBridge implements OpencodeBridge {
   async abort() {
     this.aborted++
   }
+  async getMessages(_limit?: number) {
+    return []
+  }
 
   onEvent(cb: BridgeEventHandler) {
     this.handlers.push(cb)
     return () => {
       this.handlers = this.handlers.filter((x) => x !== cb)
     }
+  }
+
+  async listSessions() {
+    return []
+  }
+  async createSession() {
+    return "sess-e2e"
+  }
+  setSession(_id: string) {}
+  async getContext() {
+    return { directory: null, mcp: [], skills: [], models: [] }
   }
 
   async close() {}

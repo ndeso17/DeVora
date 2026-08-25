@@ -27,3 +27,7 @@ dist/
 models/base.pt
 # All models (binary artifacts, download separately)
 models/
+
+# credentials
+opencode.json
+opencode.server.json

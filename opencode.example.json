@@ -1,12 +1,13 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  "model": "9router/bai/deepseek-v4-flash",
   "provider": {
     "9router": {
       "npm": "@ai-sdk/openai-compatible",
       "name": "9Router",
       "options": {
         "baseURL": "http://127.0.0.1:20128/v1",
-        "apiKey": "sk-d7f1e35504878acb-9xor07-dc2adf3f"
+        "apiKey": "YOUR_KEY_HERE"
       },
       "models": {
         "bai/deepseek-v4-flash": {

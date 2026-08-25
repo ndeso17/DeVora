@@ -1,0 +1,28 @@
+{
+  "name": "devora",
+  "version": "0.1.0",
+  "description": "DeVora — voice agent UI for OpenCode. Installer & server management CLI.",
+  "type": "module",
+  "license": "MIT",
+  "bin": {
+    "devora": "bin/devora.mjs"
+  },
+  "files": [
+    "bin",
+    "scripts",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test test/"
+  },
+  "keywords": [
+    "voice",
+    "stt",
+    "tts",
+    "opencode",
+    "assistant"
+  ]
+}

@@ -1,0 +1,217 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #0b0b10;
+  --color-surface: #131320;
+  --color-surface-2: #1c1c2e;
+  --color-text: #e7e7f0;
+  --color-muted: #8b8b9e;
+
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Voice Core — state-driven orb                                        */
+/* ------------------------------------------------------------------ */
+
+@keyframes core-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.06);
+    opacity: 1;
+  }
+}
+
+@keyframes core-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  70% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+}
+
+@keyframes core-ripple {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}
+
+@keyframes core-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes core-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-3px);
+  }
+  75% {
+    transform: translateX(3px);
+  }
+}
+
+@keyframes core-wave {
+  0%,
+  100% {
+    transform: scaleY(0.3);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes core-flash {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(0.85);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.core {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.core-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  border: 2px solid currentColor;
+}
+
+.core-dot {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  border-radius: 9999px;
+  background: currentColor;
+  opacity: 0.9;
+}
+
+.core-pulse-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  border: 2px solid currentColor;
+  animation: core-pulse 1.6s ease-out infinite;
+}
+
+.core-wave-bar {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 40px;
+  transform-origin: 50% 0;
+}
+
+.core-wave {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 9999px;
+  background: currentColor;
+  transform-origin: bottom center;
+  animation: core-wave 0.7s ease-in-out infinite;
+}
+
+.core--idle .core-ring {
+  animation: core-breathe 3s ease-in-out infinite;
+}
+
+.core--listening .core-pulse-ring {
+  animation: core-pulse 1.4s ease-out infinite;
+}
+.core--listening .core-pulse-ring:nth-child(2) {
+  animation-delay: 0.5s;
+}
+
+.core--transcribing .core-ring {
+  animation: core-ripple 1s ease-out infinite;
+}
+
+.core--working .core-ring {
+  border-top-color: transparent;
+  animation: core-spin 1s linear infinite;
+}
+
+.core--speaking .core-wave:nth-child(odd) {
+  animation-duration: 0.5s;
+}
+.core--speaking .core-wave:nth-child(3n) {
+  animation-duration: 0.9s;
+}
+
+.core--interrupting .core-dot {
+  animation: core-flash 0.4s ease-in-out 3;
+}
+
+.core--error {
+  animation: core-shake 0.3s ease-in-out 3;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .core *,
+  .core {
+    animation: none !important;
+  }
+}

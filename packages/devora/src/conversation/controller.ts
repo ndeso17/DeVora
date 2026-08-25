@@ -16,7 +16,7 @@ import { Narrator } from "../narration/narrator.ts"
 import { classifyNarration } from "../narration/filter.ts"
 import type { SpeechRecognizer } from "../stt/client.ts"
 import type { SpeechSynthesizer } from "../tts/client.ts"
-import type { OpencodeBridge, BridgeEvent } from "../opencode/bridge.ts"
+import type { OpencodeBridge, BridgeEvent, BridgeModelOption } from "../opencode/bridge.ts"
 
 export type ConversationMessage = { role: "user" | "assistant"; text: string }
 
@@ -33,7 +33,7 @@ export type VoiceControllerOptions = {
 // Explicitly allowed transitions — keeps the state machine deterministic and
 // testable.
 const TRANSITIONS: Record<VoiceState, VoiceState[]> = {
-  idle: ["listening", "error"],
+  idle: ["listening", "submitting", "error"],
   listening: ["transcribing", "submitting", "interrupting", "error"],
   transcribing: ["submitting", "listening", "interrupting", "error"],
   submitting: ["working", "interrupting", "error"],
@@ -70,6 +70,12 @@ export class VoiceController {
   private unsubscribeEvents: (() => void) | null = null
   private unsubNarrate: (() => void) | null = null
   private partialTimer: ReturnType<typeof setInterval> | null = null
+  private partialSub: (() => void) | null = null
+  private defaultModel: BridgeModelOption | null = null
+
+  setDefaultModel(model: BridgeModelOption): void {
+    this.defaultModel = model
+  }
 
   constructor(opts: VoiceControllerOptions) {
     this.opts = opts
@@ -118,6 +124,13 @@ export class VoiceController {
     this.bridgeReady = true
     this.activity.unshift(`Session: ${sessionId}`)
 
+    if (!this.partialSub) {
+      this.partialSub = this.opts.recognizer.onPartial((text) => {
+        this.partialTranscript = text
+        this.opts.onStateChange?.(this.getSnapshot())
+      })
+    }
+
     this.unsubNarrate = this.narrator.onNarrate((text, priority) => {
       this.speechQueue.push(text)
       void this.drainSpeech(priority)
@@ -129,6 +142,8 @@ export class VoiceController {
   async dispose(): Promise<void> {
     this.disposed = true
     if (this.partialTimer) clearInterval(this.partialTimer)
+    this.partialSub?.()
+    this.partialSub = null
     this.unsubNarrate?.()
     this.unsubscribeEvents?.()
     await this.opts.capture?.stop()
@@ -175,7 +190,7 @@ export class VoiceController {
         })
       }
       if (!this.partialTimer) {
-        this.partialTimer = setInterval(() => this.opts.recognizer.flushPartial(), 1500)
+        this.partialTimer = setInterval(() => this.opts.recognizer.flushPartial(), 500)
       }
     } catch (err) {
       this.listening = false
@@ -255,7 +270,7 @@ export class VoiceController {
     this.responseText = ""
     this.conversation.push({ role: "user", text })
     try {
-      await this.opts.bridge.sendMessage(text)
+      await this.opts.bridge.sendMessage(text, this.defaultModel ?? undefined)
       this.busyWithAgent = true
       this.setState("working")
     } catch (err) {
@@ -380,6 +395,9 @@ export class VoiceController {
         this.busyWithAgent = false
         this.activity.push("✓ Task selesai")
         this.finalizeAssistantText()
+        // non-streaming providers never emit assistant text parts — recover the
+        // reply from the session message store
+        void this.recoverAssistantReply()
         this.maybeAutoListen()
         break
       case "session.updated": {
@@ -392,6 +410,31 @@ export class VoiceController {
     // narration filter decides what is worth speaking
     const narration: NarrationEvent | null = classifyNarration({ type: ev.type, data: p as Record<string, unknown> })
     if (narration) this.narrator.enqueue(narration)
+  }
+
+  private async recoverAssistantReply() {
+    if (this.lastAssistantText) return // already committed via streamed text
+    try {
+      const msgs = await this.opts.bridge.getMessages(3)
+      for (const msg of msgs.reverse()) {
+        if (msg.role === "assistant") {
+          const text = msg.parts
+            .filter((p) => p.type === "text")
+            .map((p) => p.text ?? "")
+            .join("")
+            .trim()
+          if (text && text !== this.lastAssistantText) {
+            this.lastAssistantText = text
+            this.conversation.push({ role: "assistant", text })
+            const item: NarrationEvent = { text, priority: "important_progress", timestamp: Date.now() }
+            this.narrator.enqueue(item)
+          }
+          break
+        }
+      }
+    } catch {
+      // best-effort — if the bridge doesn't support messages(), fall through
+    }
   }
 
   private finalizeAssistantText() {

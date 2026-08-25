@@ -4,13 +4,14 @@ import { MockRecognizer } from "../src/stt/mock.ts"
 import type { SpeechRecognizer } from "../src/stt/client.ts"
 import type { SpeechSynthesizer } from "../src/tts/client.ts"
 import type { AudioCapture } from "../src/audio/capture.ts"
-import type { OpencodeBridge, BridgeEvent, BridgeEventHandler } from "../src/opencode/bridge.ts"
+import type { OpencodeBridge, BridgeEvent, BridgeEventHandler, BridgeModelOption } from "../src/opencode/bridge.ts"
 import { Narrator } from "../src/narration/narrator.ts"
 import { tonePcm, silencePcm } from "./helpers.ts"
 
 class FakeBridge implements OpencodeBridge {
   sessionId: string | null = null
   sent: string[] = []
+  sentModels: Array<BridgeModelOption | undefined> = []
   aborted = 0
   private handlers: BridgeEventHandler[] = []
 
@@ -18,12 +19,26 @@ class FakeBridge implements OpencodeBridge {
     this.sessionId = "sess-test-1"
     return this.sessionId
   }
-  async sendMessage(text: string) {
+  async sendMessage(text: string, model?: BridgeModelOption) {
     this.sent.push(text)
+    this.sentModels.push(model)
     this.handlers.forEach((h) => h({ type: "session.updated", properties: { sessionID: this.sessionId!, info: { status: "busy" } } }))
   }
   async abort() {
     this.aborted++
+  }
+  async getMessages(_limit?: number): Promise<Array<{ role: string; parts: Array<{ type: string; text?: string }> }>> {
+    return []
+  }
+  async listSessions() {
+    return []
+  }
+  async createSession() {
+    return "sess-test-1"
+  }
+  setSession(_id: string) {}
+  async getContext() {
+    return { directory: null, mcp: [], skills: [], models: [] }
   }
   onEvent(cb: BridgeEventHandler) {
     this.handlers.push(cb)
@@ -207,6 +222,40 @@ describe("VoiceController — state machine (doc §11 Phase 7)", () => {
     await controller.dispose()
   })
 
+  test("setDefaultModel forwards model option to bridge on submit", async () => {
+    const bridge = new FakeBridge()
+    const controller = new VoiceController({
+      bridge,
+      recognizer: new MockRecognizer(),
+      synthesizer: new BlockingSynthesizer(),
+      capture: undefined,
+      narrator: new Narrator(),
+    })
+    await controller.open()
+    controller.setDefaultModel({ providerID: "anthropic", modelID: "claude-3-5-sonnet" })
+    await controller.keyboardSubmit("Pakai model ini")
+    await waitFor(() => bridge.sent.length === 1)
+    expect(bridge.sentModels[0]).toEqual({ providerID: "anthropic", modelID: "claude-3-5-sonnet" })
+    await controller.dispose()
+  })
+
+  test("partial transcript from recognizer flows to snapshot", async () => {
+    const bridge = new FakeBridge()
+    const recognizer = new MockRecognizer()
+    const controller = new VoiceController({
+      bridge,
+      recognizer,
+      synthesizer: new BlockingSynthesizer(),
+      capture: undefined,
+      narrator: new Narrator(),
+    })
+    await controller.open()
+    await controller.startListening()
+    recognizer.emitPartial("Halo dunia")
+    expect(controller.getSnapshot().partialTranscript).toBe("Halo dunia")
+    await controller.dispose()
+  })
+
   test("empty utterance does not submit and stays listening", async () => {
     class EmptyRecognizer extends MockRecognizer implements SpeechRecognizer {
       async end() {
@@ -252,6 +301,42 @@ describe("VoiceController — state machine (doc §11 Phase 7)", () => {
     await controller.startListening()
     expect(controller.getSnapshot().state).toBe("listening")
     expect(controller.getSnapshot().error).toBeNull()
+    await controller.dispose()
+  })
+})
+
+describe("VoiceController — non-streamed reply recovery (9router path)", () => {
+  test("assistant text recovered from getMessages on session.idle", async () => {
+    class RecoverBridge extends FakeBridge {
+      async getMessages(_limit?: number) {
+        return [
+          { role: "user", parts: [{ type: "text", text: "7+1?" }] },
+          { role: "assistant", parts: [{ type: "text", text: "8" }] },
+        ]
+      }
+    }
+    const bridge = new RecoverBridge()
+    const synth = new BlockingSynthesizer()
+    const narrator = new Narrator()
+    const controller = new VoiceController({
+      bridge,
+      recognizer: new MockRecognizer("7+1?", 5),
+      synthesizer: synth,
+      capture: undefined,
+      narrator,
+    })
+    await controller.open()
+    await controller.startListening()
+    speakUtterance(controller)
+    await waitFor(() => bridge.sent.length === 1)
+    await waitFor(() => controller.getSnapshot().state === "working")
+    // no streamed text — only session.idle arrives
+    bridge.emit("session.idle", { sessionID: bridge.sessionId })
+    await waitFor(() => controller.getSnapshot().conversation.some((m) => m.role === "assistant"))
+    const conv = controller.getSnapshot().conversation
+    expect(conv.at(-1)).toEqual({ role: "assistant", text: "8" })
+    // narration enqueued → speech scheduled
+    synth.releaseAll()
     await controller.dispose()
   })
 })

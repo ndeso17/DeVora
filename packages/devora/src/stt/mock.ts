@@ -25,6 +25,9 @@ export class MockRecognizer implements SpeechRecognizer {
   onError(cb: (message: string) => void) {
     this.errorCb.push(cb)
   }
+  emitPartial(text: string) {
+    this.partialCb.forEach((cb) => cb(text))
+  }
   start() {
     return Promise.resolve()
   }

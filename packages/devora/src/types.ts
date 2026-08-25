@@ -47,9 +47,10 @@ export type AudioCaptureConfig = {
 }
 
 export type SpeechRecognizerConfig = {
-  provider: "vosk" | "whisper"
+  provider: "vosk" | "whisper" | "stream"
   language: string
   modelPath?: string
+  trailingMs?: number
 }
 
 export type SpeechSynthesizerConfig = {
