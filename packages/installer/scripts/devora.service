@@ -1,0 +1,20 @@
+[Unit]
+Description=DeVora Voice Server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=USER
+WorkingDirectory=HOME_DIR/packages/server
+Environment=PROJECT=HOME_DIR
+Environment=DEVORA_PIPER_MODEL=HOME_DIR/.local/share/piper/models/id/id_ID-news_tts-medium.onnx
+Environment=DEVORA_PIPER_CONFIG=HOME_DIR/.local/share/piper/models/id/id_ID-news_tts-medium.onnx.json
+Environment=DEVORA_STT_MODEL=HOME_DIR/models/faster-whisper-base
+Environment=PATH=HOME_DIR/.bun/bin:/usr/local/bin:/usr/bin:/bin
+ExecStart=HOME_DIR/.bun/bin/bun run src/index.ts
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
